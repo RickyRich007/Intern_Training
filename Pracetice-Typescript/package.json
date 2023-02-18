@@ -1,0 +1,21 @@
+{
+  "name": "pracetice-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node src/script.ts",
+    "start": "node dist/script.js",
+    "build": "tsc --build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "ts-node": "^10.9.1",
+    "uuid": "^9.0.0"
+  }
+}
