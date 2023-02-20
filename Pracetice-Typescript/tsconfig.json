@@ -4,7 +4,9 @@
     "noEmitOnError": true,
     "removeComments": false,
     "sourceMap": true,
-    "target": "es5",
-    "outDir": "dist"
-  }
+    "target": "ES6",
+    "outDir": "dist",
+    "moduleResolution": "node",
+  },
+  "include": ["src/"]
 }
