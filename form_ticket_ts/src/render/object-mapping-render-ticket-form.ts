@@ -25,12 +25,12 @@ export const operationMapping = {
   custom_dropdown: (
     elementFieldArr: HTMLElement[],
     element: ITicketField,
-    datafields: ITicketField[]
+    datafields?: ITicketField[]
   ) => {
     const divChild = <HTMLElement>document.createElement("div");
     divChild.setAttribute("id", `divChild+${element.id}`);
     elementFieldArr.push(divChild);
-    renderDropDownField(element, datafields, divChild);
+    renderDropDownField(element, datafields!, divChild);
   },
   default_description: (
     elementFieldArr: HTMLElement[],

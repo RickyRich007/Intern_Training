@@ -4,11 +4,6 @@ import {
   UpLoadFileTForm,
   FeatureBtnTicketForm,
 } from "./component/cpnt-ticket-form.js";
-import {
-  renderInputField,
-  renderDropDownField,
-  renderDesField,
-} from "./render/render-ticket-form.js";
 import { getDataTicketForm } from "./api/get-data-field.js";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { ITicketForm } from "./interface/ITicketForm.js";
@@ -17,14 +12,49 @@ import { operationMapping } from "./render/object-mapping-render-ticket-form.js"
 async function renderMainTicketForm(): Promise<void> {
   let elementFieldArr: HTMLElement[] = [];
 
-  const skeleton = <HTMLElement>document.createElement("div");
-  skeleton.innerHTML = `<form class="ticketsForm skeleton">
-  <label for="150000290869" class="labelTickForm"></label>
-  <input id="150000671202" class="inputTicketForm skeleton" required="">
-  <label for="150000290869" class="labelTickForm"></label>
-  <input id="150000290860"  class="inputTicketForm skeleton" required="">
-  <label for="150000290869" class="labelTickForm"></label>
-</form>`;
+  const skeleton = <HTMLElement>document.createElement("form");
+  skeleton.className = "ticketsForm skeleton";
+  const labelTemp = <HTMLElement>document.createElement("label");
+  labelTemp.className = "labelTickForm";
+
+  const inputTicketForm = <HTMLElement>document.createElement("input");
+  inputTicketForm.className = "inputTicketForm skeleton";
+
+  const inputTicketForm1 = <HTMLElement>document.createElement("input");
+  inputTicketForm1.className = "inputTicketForm skeleton";
+
+  const inputTicketForm2 = <HTMLElement>document.createElement("input");
+  inputTicketForm2.className = "inputTicketForm skeleton";
+
+  const inputTicketForm3 = <HTMLElement>document.createElement("input");
+  inputTicketForm3.className = "inputTicketForm skeleton";
+  const inputTicketForm4 = <HTMLElement>document.createElement("input");
+  inputTicketForm4.className = "inputTicketForm skeleton";
+
+  const inputTicketForm5 = <HTMLElement>document.createElement("input");
+  inputTicketForm5.className = "inputTicketForm skeleton";
+  const inputTicketForm6 = <HTMLElement>document.createElement("input");
+  inputTicketForm6.className = "inputTicketForm skeleton";
+
+  const inputTicketForm7 = <HTMLElement>document.createElement("input");
+  inputTicketForm7.className = "inputTicketForm skeleton";
+
+  skeleton.appendChild(labelTemp);
+  skeleton.appendChild(inputTicketForm);
+  skeleton.appendChild(labelTemp);
+  skeleton.appendChild(inputTicketForm1);
+  skeleton.appendChild(labelTemp);
+  skeleton.appendChild(inputTicketForm2);
+  skeleton.appendChild(labelTemp);
+  skeleton.appendChild(inputTicketForm3);
+  skeleton.appendChild(labelTemp);
+  skeleton.appendChild(inputTicketForm4);
+  skeleton.appendChild(labelTemp);
+  skeleton.appendChild(inputTicketForm5);
+  skeleton.appendChild(labelTemp);
+  skeleton.appendChild(inputTicketForm6);
+  skeleton.appendChild(labelTemp);
+  skeleton.appendChild(inputTicketForm7);
 
   document.body.appendChild(skeleton);
   let dataTicketForm: ITicketForm = await getDataTicketForm("150000099965");
@@ -38,33 +68,13 @@ async function renderMainTicketForm(): Promise<void> {
   });
 
   //renderFields
-  let tempVar: any;
   dataTicketForm.fields.forEach((element: ITicketField) => {
     if (!element.section_mappings && !element.sections) {
-      switch (element.type) {
-        case "custom_text":
-          operationMapping["custom_text"](elementFieldArr, element);
-          break;
-        case "default_requester":
-          operationMapping["default_requester"](elementFieldArr, element);
-          break;
-        case "default_company":
-          operationMapping["default_company"](elementFieldArr, element);
-          break;
-        case "custom_dropdown":
-          operationMapping["custom_dropdown"](
-            elementFieldArr,
-            element,
-            dataTicketForm.fields
-          );
-          break;
-        case "default_description":
-          tempVar = element.id;
-          operationMapping["default_description"](elementFieldArr, element);
-          break;
-        default:
-          break;
-      }
+      operationMapping[element.type as keyof typeof operationMapping](
+        elementFieldArr,
+        element,
+        dataTicketForm.fields!
+      );
     }
   });
 
@@ -89,7 +99,7 @@ async function renderMainTicketForm(): Promise<void> {
     ticketFrm.getElement().appendChild(element);
   });
   document.body.appendChild(ticketFrm.getElement());
-  ClassicEditor.create(document.getElementById(tempVar) as HTMLElement);
+  ClassicEditor.create(document.querySelector(".desTicketForm") as HTMLElement);
 }
 
 renderMainTicketForm();

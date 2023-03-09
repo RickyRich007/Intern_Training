@@ -130,8 +130,11 @@ class ReCaptChaTicketForm extends BaseComponent {
   public renderContent() {
     this.element = document.createElement("div");
     this.element.setAttribute("id", "rcaptcha");
-    this.element.setAttribute("class", "g-ReCaptCha");
-    this.element.setAttribute("data-sitekey", "site key");
+    this.element.setAttribute("class", "g-recaptcha");
+    this.element.setAttribute(
+      "data-sitekey",
+      "6Lfpvd0kAAAAAKGrJcZaIWEQgY5FRW8lMETtX7q6"
+    );
     this.element.style.marginTop = "1em";
   }
   public renderSpan() {

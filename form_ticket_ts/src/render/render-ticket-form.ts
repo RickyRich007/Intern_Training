@@ -64,16 +64,10 @@ function renderDropDownField(
       }
     } else {
       if (element.section_mappings) {
-        switch (element.type) {
-          case "custom_text":
-            operationMapping["custom_text"](elementFieldArr, element);
-            break;
-          case "custom_checkbox":
-            operationMapping["custom_checkbox"](elementFieldArr, element);
-            break;
-          default:
-            break;
-        }
+        operationMapping[element.type as keyof typeof operationMapping](
+          elementFieldArr,
+          element
+        );
       }
     }
   });
