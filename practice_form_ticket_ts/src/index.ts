@@ -3,53 +3,64 @@ import {
   ReCaptChaTicketForm,
   UpLoadFileTForm,
   FeatureBtnTicketForm,
-} from "./Component/cpnt_ticket_form";
-import { getApi } from "./API/get_api";
+} from "./component/cpnt-ticket-form.js";
 import {
   renderInputField,
   renderDropDownField,
   renderDesField,
-} from "./Render/render_ticket_form";
-
+} from "./render/render-ticket-form.js";
+import { getDataTicketForm } from "./api/get-data-field.js";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { ITicketForm } from "./interface/ITicketForm.js";
+import { ITicketField } from "./interface/ITicketField.js";
+import { operationMapping } from "./render/object-mapping-render-ticket-form.js";
 async function renderMainTicketForm(): Promise<void> {
-  let dataTicketForm = await getApi();
+  let elementFieldArr: HTMLElement[] = [];
+
+  const skeleton = <HTMLElement>document.createElement("div");
+  skeleton.innerHTML = `<form class="ticketsForm skeleton">
+  <label for="150000290869" class="labelTickForm"></label>
+  <input id="150000671202" class="inputTicketForm skeleton" required="">
+  <label for="150000290869" class="labelTickForm"></label>
+  <input id="150000290860"  class="inputTicketForm skeleton" required="">
+  <label for="150000290869" class="labelTickForm"></label>
+</form>`;
+
+  document.body.appendChild(skeleton);
+  let dataTicketForm: ITicketForm = await getDataTicketForm("150000099965");
+  document.body.removeChild(skeleton);
+
   //renderFrm
   const ticketFrm = new TicketForm({
     id: dataTicketForm.id,
     name: dataTicketForm.name,
     title: dataTicketForm.title,
   });
-  //render first field
-  let elementFieldArr = [];
-  dataTicketForm.fields.forEach((element: any) => {
-    if (!element.section_mappings) {
+
+  //renderFields
+  let tempVar: any;
+  dataTicketForm.fields.forEach((element: ITicketField) => {
+    if (!element.section_mappings && !element.sections) {
       switch (element.type) {
         case "custom_text":
-          const [labelCustomTxt, inputCustomTxt] = renderInputField(element);
-          elementFieldArr.push(labelCustomTxt, inputCustomTxt);
+          operationMapping["custom_text"](elementFieldArr, element);
           break;
         case "default_requester":
-          const [labelDefaultRequester, inputDefaultRequester] =
-            renderInputField(element);
-          elementFieldArr.push(labelDefaultRequester, inputDefaultRequester);
+          operationMapping["default_requester"](elementFieldArr, element);
           break;
         case "default_company":
-          const [labelDefaultCompany, inputDefaultCompany] =
-            renderInputField(element);
-          elementFieldArr.push(labelDefaultCompany, inputDefaultCompany);
+          operationMapping["default_company"](elementFieldArr, element);
           break;
         case "custom_dropdown":
-          const divChild = <HTMLElement>document.createElement("div");
-          divChild.setAttribute("id", `divChild+${element.id}`);
-          elementFieldArr.push(divChild);
-          const skeleton = <HTMLElement>document.createElement("div");
-          skeleton.innerHTML = `<h2 class="card-title skeleton"></h2>`;
-          elementFieldArr.push(skeleton);
-          renderDropDownField(element, false, divChild, skeleton);
+          operationMapping["custom_dropdown"](
+            elementFieldArr,
+            element,
+            dataTicketForm.fields
+          );
           break;
         case "default_description":
-          const [labelDefaultDes, desDefaultDes] = renderDesField(element);
-          elementFieldArr.push(labelDefaultDes, desDefaultDes);
+          tempVar = element.id;
+          operationMapping["default_description"](elementFieldArr, element);
           break;
         default:
           break;
@@ -59,7 +70,6 @@ async function renderMainTicketForm(): Promise<void> {
 
   const recaptcha = new ReCaptChaTicketForm();
   recaptcha.renderContent();
-
   elementFieldArr.push(recaptcha.getElement());
   recaptcha.renderSpan();
   elementFieldArr.push(recaptcha.getElement());
@@ -79,11 +89,7 @@ async function renderMainTicketForm(): Promise<void> {
     ticketFrm.getElement().appendChild(element);
   });
   document.body.appendChild(ticketFrm.getElement());
-  // ClassicEditor.create(document.querySelector("#editor")).catch(
-  //   (error: any) => {
-  //     console.error(error);
-  //   }
-  // );
+  ClassicEditor.create(document.getElementById(tempVar) as HTMLElement);
 }
 
 renderMainTicketForm();

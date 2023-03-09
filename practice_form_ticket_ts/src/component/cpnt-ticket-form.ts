@@ -200,7 +200,7 @@ class CheckBoxTicketForm extends BaseComponent {
     policyCheckbox.setAttribute("type", "checkbox");
     policyCheckbox.setAttribute("id", this.id);
     policyCheckbox.setAttribute("name", this.name);
-    this.element.className = "policyCheckbox";
+    policyCheckbox.className = "policyCheckbox";
     const policyLabel = document.createElement("label");
     policyLabel.setAttribute("for", this.id);
     policyLabel.textContent = " " + this.content;
