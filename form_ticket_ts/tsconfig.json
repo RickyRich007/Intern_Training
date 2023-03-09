@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "target": "ES6",
+    "module": "es2022",
+    "rootDir": "src",
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "outDir": "dist",
+    "removeComments": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "allowJs":true,
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables": false,
+    "types": ["node"],
+    "paths": {
+      "@ckeditor/ckeditor5-build-classic": ["node_modules/@types/ckeditor5-build-classic"]
+    }
+    
+  },
+  "exclude": ["node_modules", "dist"],
+  "include": ["src/**/*.ts"]
+  
+}
