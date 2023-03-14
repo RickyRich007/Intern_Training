@@ -1,0 +1,113 @@
+.ticketsForm {
+  padding: 20px;
+  width: 70%;
+  margin: auto;
+
+  border-radius: 5px;
+  background-color: #f2f2f2;
+}
+
+.labelTickForm {
+  display: block;
+
+  margin-top: 1em;
+  margin-bottom: 0.3em;
+
+  font-size: 1.2em;
+}
+
+.inputTicketForm {
+  padding: 10px;
+  margin: auto;
+  margin-bottom: 10px;
+  width: 98%;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+
+  font-size: 1em;
+}
+.dropDownTicketForm {
+  padding: 10px;
+  width: 98%;
+  margin: auto;
+
+  border: 1px solid #ccc;
+  border-radius: 8px;
+
+  font-size: 1em;
+}
+.desTicketForm {
+  border-radius: 8px;
+  width: 80%;
+}
+.uploadTicketForm {
+  display: block;
+
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.btnCancelTicketForm {
+  padding: 12px 20px;
+  cursor: pointer;
+  width: 4%;
+
+  border: none;
+  border-radius: 4px;
+
+  color: white;
+  background-color: red;
+  text-decoration: none;
+}
+.btnSubmitTicketForm {
+  padding: 12px 20px;
+  cursor: pointer;
+  margin-left: 0.5em;
+
+  border: none;
+  border-radius: 4px;
+
+  background-color: #4caf50;
+  color: white;
+}
+.card {
+  display: flex;
+
+  flex-direction: column;
+  flex-basis: 300px;
+  flex-shrink: 0;
+  flex-grow: 0;
+
+  max-width: 100%;
+}
+.card-title {
+  margin-bottom: 3px;
+  font-size: 1.25rem;
+  line-height: 1.33;
+  font-weight: 700;
+}
+
+.card-title.skeleton {
+  min-height: 36px;
+  border-radius: 4px;
+}
+
+.skeleton {
+  background-color: #e2e5e7;
+  background-image: linear-gradient(to bottom right, #e2e5e7, #ffffff60);
+  background-size: 40px 100%;
+  background-repeat: no-repeat;
+  background-position: left -40px top 0;
+  animation: shine 1s ease infinite;
+}
+.policyCheckbox {
+  margin-right: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+@keyframes shine {
+  to {
+    background-position: right -40px top 0;
+  }
+}
