@@ -6,7 +6,7 @@ import {
   CheckBoxTicketForm,
 } from "../component/cpnt-ticket-form.js";
 import { ITicketField } from "../interface/ITicketField.js";
-import { operationMapping } from "../render/object-mapping-render-ticket-form.js";
+import { operationMapping } from "./object-mapping-render-ticket-form.js";
 
 //render Input
 function renderInputField(selectFieldElement: ITicketField) {
@@ -28,50 +28,55 @@ function renderDropDownField(
   dataTicketFormField: ITicketField[],
   parentContainer: HTMLElement
 ) {
+  //fitler ra hết các field dropdown có trong data form chính
   let dataElement = dataTicketFormField.filter(
     (value: ITicketField) => value.id == element.id
   );
-  let elementFieldArr: HTMLElement[] = [];
+
+  let fieldsElementArr: HTMLElement[] = [];
   dataElement.forEach((data: ITicketField) => {
-    if (data.type == "custom_dropdown") {
-      if (data.choices) {
-        const labelEle = new LabelTicketForm({
-          id: element.id,
-          content: element.label_for_customers,
-        });
-        const dropDownEle = new DropDownTicketForm({
-          id: data.id,
-          name: data.name,
-          choices: data.choices,
-        });
-        if (data.sections) {
-          let childContainer = document.createElement("div");
-          childContainer.id = `divChildEle+${data.id}`;
-          elementFieldArr.push(
-            labelEle.getElement(),
-            dropDownEle.getElement(),
-            childContainer
-          );
-          clickEventDropDown(
-            dropDownEle.getElement(),
-            data.sections,
-            dataTicketFormField,
-            childContainer
-          );
-        } else {
-          elementFieldArr.push(labelEle.getElement(), dropDownEle.getElement());
-        }
+    //nếu phải là dropdown và có lựa chọn
+    if (data.type == "custom_dropdown" && data.choices) {
+      const labelEle = new LabelTicketForm({
+        id: element.id,
+        content: element.label_for_customers,
+      });
+      const dropDownEle = new DropDownTicketForm({
+        id: data.id,
+        name: data.name,
+        choices: data.choices,
+      });
+      dropDownEle.getElement().setAttribute("custom-fields", "custom");
+      //nếu có con bên trong
+      if (data.sections) {
+        let childContainer = document.createElement("div");
+        childContainer.id = `divChildEle+${data.id}`;
+        fieldsElementArr.push(
+          labelEle.getElement(),
+          dropDownEle.getElement(),
+          childContainer
+        );
+        clickEventDropDown(
+          dropDownEle.getElement(),
+          data.sections,
+          dataTicketFormField,
+          childContainer
+        );
+        //nếu không có con
+      } else {
+        fieldsElementArr.push(labelEle.getElement(), dropDownEle.getElement());
       }
+      //nếu không phải là dropdown
     } else {
       if (element.section_mappings) {
         operationMapping[element.type as keyof typeof operationMapping](
-          elementFieldArr,
+          fieldsElementArr,
           element
         );
       }
     }
   });
-  parentContainer.append(...elementFieldArr);
+  parentContainer.append(...fieldsElementArr);
 }
 
 //EventClickAdlistener
@@ -82,12 +87,12 @@ function clickEventDropDown(
   childContainer: HTMLElement
 ) {
   optionSelected?.addEventListener("change", function (e) {
+    childContainer.innerHTML = "";
     dataSection.forEach((element: ITicketField) => {
-      if (
-        (e.target as HTMLSelectElement).options[
-          (e.target as HTMLSelectElement).selectedIndex
-        ].id == element.choice_ids[0]
-      ) {
+      const selectedOptionId = (e.target as HTMLSelectElement).options[
+        (e.target as HTMLSelectElement).selectedIndex
+      ].id;
+      if (selectedOptionId == element.choice_ids[0]) {
         let tempArr: ITicketField[] = [];
         for (let i = 0; i < element.ticket_field_ids.length; i++) {
           let tempAwait = dataTicketFormField.find(
@@ -95,7 +100,6 @@ function clickEventDropDown(
           );
           tempArr.push(tempAwait!);
         }
-        childContainer.innerHTML = "";
         for (let i = 0; i < tempArr.length; i++) {
           renderDropDownField(tempArr[i], dataTicketFormField, childContainer);
         }

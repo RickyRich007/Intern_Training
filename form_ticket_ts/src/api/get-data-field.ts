@@ -3,47 +3,61 @@ import { ITicketForm } from "../interface/ITicketForm.js";
 import { ITicketField } from "../interface/ITicketField.js";
 async function getDataTicketForm(id: string): Promise<ITicketForm> {
   let dataTicketForm = await getApiTicketForm(id);
+  //Xoá các field cấp 2
   for (let i = 0; i < dataTicketForm.fields.length; i++) {
-    if (dataTicketForm.fields[i].section_mappings) {
+    if (
+      dataTicketForm.fields[i].section_mappings ||
+      dataTicketForm.fields[i].type == "default_company"
+    ) {
       dataTicketForm.fields.splice(i, 1);
       i--;
     }
   }
-  for (let i = 0; i < dataTicketForm.fields.length; i++) {
-    if (
-      dataTicketForm.fields[i].type == "custom_dropdown" &&
-      dataTicketForm.fields[i].has_section &&
-      !dataTicketForm.fields[i].choices
-    ) {
-      let element = await getApiTicketFormField(dataTicketForm.fields[i].id);
-      let dataTicketFormChild = await getDataDropDownField(element);
-      if (dataTicketFormChild) {
-        dataTicketForm.fields.push(...dataTicketFormChild);
+  //render các Field dropdown có chứa con, chờ lấy hết mới render
+  const DropDownFieldPromises = dataTicketForm.fields.map(
+    async (data: ITicketField) => {
+      if (data.type == "custom_dropdown" && data.has_section && !data.choices) {
+        let element = await getApiTicketFormField(data.id);
+        return await getDataDropDownField(element);
       }
+      return null;
     }
-  }
+  );
+  //khi lấy tất cả đã xong thì render DD nó ra
+  const DropDownFieldResult = await Promise.all(DropDownFieldPromises);
+  DropDownFieldResult.forEach((data) => {
+    if (data !== null) {
+      dataTicketForm.fields.push(...data);
+    }
+  });
   return dataTicketForm;
 }
+
+//render các Field dropdown cha, chờ lấy hết mới render
 async function getDataDropDownField(
   element: ITicketField
 ): Promise<ITicketField[]> {
   let tempArr: ITicketField[] = [];
-  for (let i = 0; i < element.sections.length; i++) {
-    for (let j = 0; j < element.sections[i].ticket_field_ids.length; j++) {
-      let tempAwait = await getApiTicketFormField(
-        element.sections[i].ticket_field_ids[j]
-      );
-      if (tempAwait.has_section) {
-        let element = await getApiTicketFormField(tempAwait.id);
-        let dataTicketFormChild = await getDataDropDownField(element);
-        if (dataTicketFormChild) {
-          tempArr.push(...dataTicketFormChild);
-        }
-      }
-      tempArr.push(tempAwait);
-    }
-  }
-  tempArr.push(await getApiTicketFormField(element.id));
+  const promises = element.sections.map((data: ITicketField) => {
+    return getDataSectionDropDownField(data.ticket_field_ids);
+  });
+  //khi lấy tất cả đã xong thì mới render
+  const result = await Promise.all(promises);
+  result.forEach((data) => {
+    tempArr.push(...data);
+  });
+  tempArr.push(element);
   return tempArr;
+}
+
+//render các Field dropdown con, chờ lấy hết mới render
+async function getDataSectionDropDownField(
+  ticket_field_ids: string[]
+): Promise<ITicketField[]> {
+  const promises = ticket_field_ids.map((id) => {
+    return getApiTicketFormField(id);
+  });
+  const result = await Promise.all(promises);
+  return result;
 }
 export { getDataTicketForm };

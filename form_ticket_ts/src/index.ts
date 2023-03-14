@@ -8,10 +8,13 @@ import { getDataTicketForm } from "./api/get-data-field.js";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { ITicketForm } from "./interface/ITicketForm.js";
 import { ITicketField } from "./interface/ITicketField.js";
-import { operationMapping } from "./render/object-mapping-render-ticket-form.js";
-async function renderMainTicketForm(): Promise<void> {
-  let elementFieldArr: HTMLElement[] = [];
+import { operationMapping } from "./method/object-mapping-render-ticket-form.js";
+import { submittingTicketFormEvent } from "./method/submitting-form-ticket.js";
+async function renderMainTicketForm(idTicketForm: string): Promise<void> {
+  //mảng chứa các element
+  let fieldsElementArr: HTMLElement[] = [];
 
+  //cái này cái khung xương, có thể xoá làm cái khác .
   const skeleton = <HTMLElement>document.createElement("form");
   skeleton.className = "ticketsForm skeleton";
   const labelTemp = <HTMLElement>document.createElement("label");
@@ -55,9 +58,12 @@ async function renderMainTicketForm(): Promise<void> {
   skeleton.appendChild(inputTicketForm6);
   skeleton.appendChild(labelTemp);
   skeleton.appendChild(inputTicketForm7);
-
   document.body.appendChild(skeleton);
-  let dataTicketForm: ITicketForm = await getDataTicketForm("150000099965");
+  //
+
+  //gọi lấy data chính của form
+  let dataTicketForm: ITicketForm = await getDataTicketForm(idTicketForm);
+
   document.body.removeChild(skeleton);
 
   //renderFrm
@@ -67,11 +73,11 @@ async function renderMainTicketForm(): Promise<void> {
     title: dataTicketForm.title,
   });
 
-  //renderFields
+  //renderFields, gọi key value function render
   dataTicketForm.fields.forEach((element: ITicketField) => {
     if (!element.section_mappings && !element.sections) {
       operationMapping[element.type as keyof typeof operationMapping](
-        elementFieldArr,
+        fieldsElementArr,
         element,
         dataTicketForm.fields!
       );
@@ -80,26 +86,57 @@ async function renderMainTicketForm(): Promise<void> {
 
   const recaptcha = new ReCaptChaTicketForm();
   recaptcha.renderContent();
-  elementFieldArr.push(recaptcha.getElement());
+  fieldsElementArr.push(recaptcha.getElement());
   recaptcha.renderSpan();
-  elementFieldArr.push(recaptcha.getElement());
+  fieldsElementArr.push(recaptcha.getElement());
 
   const uploadfile = new UpLoadFileTForm();
   uploadfile.renderUFile();
-  elementFieldArr.push(uploadfile.getElement());
+  fieldsElementArr.push(uploadfile.getElement());
 
   const featurebtn = new FeatureBtnTicketForm();
   featurebtn.renderCnlBtn();
-  elementFieldArr.push(featurebtn.getElement());
+  fieldsElementArr.push(featurebtn.getElement());
 
   featurebtn.renderSubmitBtn();
-  elementFieldArr.push(featurebtn.getElement());
+  fieldsElementArr.push(featurebtn.getElement());
 
-  elementFieldArr.forEach((element) => {
+  fieldsElementArr.forEach((element) => {
     ticketFrm.getElement().appendChild(element);
   });
   document.body.appendChild(ticketFrm.getElement());
-  ClassicEditor.create(document.querySelector(".desTicketForm") as HTMLElement);
+
+  //render editor dùng của CKEditor5
+  const editor = ClassicEditor.create(
+    document.querySelector(".desTicketForm") as HTMLElement,
+    {
+      toolbar: {
+        items: [
+          "heading",
+          "|",
+          "bold",
+          "italic",
+          "link",
+          "bulletedList",
+          "numberedList",
+          "|",
+          "undo",
+          "redo",
+        ],
+      },
+      language: "en",
+    }
+  );
+  //tạo recaptcha của google
+  const script = document.createElement("script");
+
+  // Set the source of the script
+  script.src = "https://www.google.com/recaptcha/api.js";
+
+  // Add the script to the document
+  document.body.appendChild(script);
+  //Gọi hàm submit
+  await submittingTicketFormEvent(editor, idTicketForm);
 }
 
-renderMainTicketForm();
+renderMainTicketForm("150000112167");

@@ -159,12 +159,13 @@ class UpLoadFileTForm extends BaseComponent {
         return;
       }
       const fileSizeKB = Math.round(file.size / 1024);
-      if (fileSizeKB > 1000) {
+      if (fileSizeKB > 20000) {
         (event.target as HTMLInputElement).value = ""; // Reset the input field
-        alert("File size exceeds the limit of 1MB."); // Show an error message
+        alert("File size exceeds the limit of 20MB."); // Show an error message
       }
     });
     this.element.className = "uploadTicketForm";
+    this.element.setAttribute("name", "attachments[]");
   }
 }
 
@@ -203,6 +204,7 @@ class CheckBoxTicketForm extends BaseComponent {
     policyCheckbox.setAttribute("type", "checkbox");
     policyCheckbox.setAttribute("id", this.id);
     policyCheckbox.setAttribute("name", this.name);
+    policyCheckbox.setAttribute("custom-fields", "custom");
     policyCheckbox.className = "policyCheckbox";
     const policyLabel = document.createElement("label");
     policyLabel.setAttribute("for", this.id);
